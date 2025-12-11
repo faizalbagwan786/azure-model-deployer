@@ -1,0 +1,43 @@
+name: Deploy Model to Azure
+
+on:
+  workflow_dispatch:
+    inputs:
+      model_key:
+        description: 'Model Key (matches filename in config/models)'
+        required: true
+        default: 'gpt2-small'
+      environment:
+        description: 'Environment (dev, stage, prod)'
+        required: true
+        default: 'dev'
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      # 1. Get the code from the repo
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      # 2. Install Python
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.9'
+
+      # 3. Install the libraries we listed in requirements.txt
+      - name: Install Dependencies
+        run: |
+          pip install -r requirements.txt
+
+      # 4. Log into Azure (This connects GitHub to your Cloud)
+      - name: Azure Login
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      # 5. Run our "Brain" script
+      - name: Run Deployment Script
+        run: |
+          python src/deployment/deploy_model.py --model-key ${{ inputs.model_key }} --env ${{ inputs.environment }}

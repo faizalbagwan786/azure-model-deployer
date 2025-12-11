@@ -1,0 +1,13 @@
+{
+  "name": "dev",
+  "subscription_id": "550e8400-e29b-41d4-a716-446655440000",
+  "resource_group": "modep-ml-dev-rg",
+  "location": "eastus",
+  "acr_name": "modepacrdev",
+  "container_app_env_name": "modep-ca-env-dev",
+  "container_app_base_name": "modep-model",
+  "cpu": 0.5,
+  "memory": "1Gi",
+  "min_replicas": 1,
+  "max_replicas": 3
+}
