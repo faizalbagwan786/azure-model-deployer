@@ -8,7 +8,6 @@ services:
     container_name: azure-model-deployer-gpt2
     env_file: .env
     environment:
-      # Hardcoded ID to ensure this container ALWAYS runs GPT-2
       HF_MODEL_ID: gpt2
       TASK_TYPE: text-generation
       MAX_TOKENS: 128

@@ -1,22 +1,14 @@
 fastapi==0.110.0
 uvicorn==0.29.0
 python-multipart==0.0.9
-
-# CORE: PyTorch 2.4.0 (CPU)
 torch==2.4.0 --index-url https://download.pytorch.org/whl/cpu
 torchvision==0.19.0 --index-url https://download.pytorch.org/whl/cpu
-
-# CORE: Transformers 4.49+ (Required for BOTH SmolVLM models)
 transformers>=4.49.0
 huggingface-hub>=0.24.0
 tokenizers>=0.19.1
-
-# CORE: Dependencies for 2.2B Model (and future-proofing)
 num2words
 protobuf
 sentencepiece
-
-# CORE: Stability Fixes
 numpy<2.0
 Pillow==10.3.0
 requests==2.31.0
