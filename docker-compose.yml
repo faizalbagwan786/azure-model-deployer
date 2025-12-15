@@ -1,0 +1,32 @@
+version: "3.9"
+
+services:
+  gpt2:
+    build:
+      context: .
+      dockerfile: docker/base_hf_server.Dockerfile
+    container_name: azure-model-deployer-gpt2
+    env_file: .env
+    environment:
+      # Hardcoded ID to ensure this container ALWAYS runs GPT-2
+      HF_MODEL_ID: gpt2
+      TASK_TYPE: text-generation
+      MAX_TOKENS: 128
+    ports:
+      - "8080:8080"
+    restart: always
+
+
+  smol-vlm:
+    build:
+      context: .
+      dockerfile: docker/base_hf_server.Dockerfile
+    container_name: azure-model-deployer-smol-vlm
+    env_file: .env
+    environment:
+      HF_MODEL_ID: HuggingFaceTB/SmolVLM2-2.2B-Instruct
+      TASK_TYPE: vlm
+      MAX_TOKENS: 128
+    ports:
+      - "8081:8080"
+    restart: always

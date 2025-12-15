@@ -1,14 +1,14 @@
-FROM python:3.9-slim
+FROM python:3.10-slim-bullseye
+
+RUN apt-get update && apt-get install -y git curl && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
 
-# Install dependencies
-# Using --no-cache-dir to keep image size small
-RUN pip install --no-cache-dir fastapi uvicorn transformers torch
+COPY requirements.txt .
+RUN pip install --no-cache-dir --upgrade pip && \
+    pip install --no-cache-dir -r requirements.txt
 
-COPY app.py /app/app.py
+COPY src/app.py /app/app.py
 
-# Default port 8080
-EXPOSE 8080
 
 CMD ["uvicorn", "app:app", "--host", "0.0.0.0", "--port", "8080"]
