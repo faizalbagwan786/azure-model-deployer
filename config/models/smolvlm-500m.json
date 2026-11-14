@@ -1,0 +1,14 @@
+{
+  "model_key": "smolvlm-500m",
+  "huggingface_model_id": "HuggingFaceTB/SmolVLM-500M-Instruct",
+  "task_type": "vlm",
+  "image_tag_suffix": "v1",
+  "port": 8080,
+  "healthcheck_path": "/health",
+  "environment_variables": {
+    "HF_MODEL_ID": "HuggingFaceTB/SmolVLM-500M-Instruct",
+    "TASK_TYPE": "vlm",
+    "MAX_TOKENS": "128"
+  }
+}
+

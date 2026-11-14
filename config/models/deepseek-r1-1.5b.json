@@ -1,0 +1,14 @@
+{
+  "model_key": "deepseek-r1-1.5b",
+  "huggingface_model_id": "deepseek-ai/DeepSeek-R1-Distill-Qwen-1.5B",
+  "task_type": "chat",
+  "image_tag_suffix": "v1",
+  "port": 8080,
+  "healthcheck_path": "/health",
+  "environment_variables": {
+    "HF_MODEL_ID": "deepseek-ai/DeepSeek-R1-Distill-Qwen-1.5B",
+    "TASK_TYPE": "chat",
+    "MAX_TOKENS": "512"
+  }
+}
+

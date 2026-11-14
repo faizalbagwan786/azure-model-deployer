@@ -1,0 +1,15 @@
+{
+  "name": "prod",
+  "subscription_id": "YOUR-AZURE-SUBSCRIPTION-ID",
+  "resource_group": "modep-ai-prod-rg",
+  "location": "eastus2",
+  "acr_name": "modepaiprodacr",
+  "container_app_env_name": "modep-ai-env-prod",
+  "container_app_base_name": "private-ai-gateway",
+  "cpu": 4.0,
+  "memory": "8Gi",
+  "min_replicas": 1,
+  "max_replicas": 8,
+  "scale_to_zero": false,
+  "idle_timeout_seconds": 600
+}

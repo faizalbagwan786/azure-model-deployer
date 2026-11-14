@@ -1,0 +1,13 @@
+{
+  "model_key": "bge-small-embeddings",
+  "huggingface_model_id": "BAAI/bge-small-en-v1.5",
+  "task_type": "embeddings",
+  "image_tag_suffix": "v1",
+  "port": 8080,
+  "healthcheck_path": "/health",
+  "environment_variables": {
+    "HF_MODEL_ID": "BAAI/bge-small-en-v1.5",
+    "TASK_TYPE": "embeddings"
+  }
+}
+

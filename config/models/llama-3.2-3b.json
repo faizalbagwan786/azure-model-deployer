@@ -1,0 +1,14 @@
+{
+  "model_key": "llama-3.2-3b",
+  "huggingface_model_id": "meta-llama/Llama-3.2-3B-Instruct",
+  "task_type": "chat",
+  "image_tag_suffix": "v1",
+  "port": 8080,
+  "healthcheck_path": "/health",
+  "environment_variables": {
+    "HF_MODEL_ID": "meta-llama/Llama-3.2-3B-Instruct",
+    "TASK_TYPE": "chat",
+    "MAX_TOKENS": "1024"
+  }
+}
+

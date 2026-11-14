@@ -1,13 +1,15 @@
 {
   "name": "dev",
-  "subscription_id": "550e8400-e29b-41d4-a716-446655440000",
-  "resource_group": "modep-ml-dev-rg",
-  "location": "eastus",
-  "acr_name": "modepacrdev",
-  "container_app_env_name": "modep-ca-env-dev",
-  "container_app_base_name": "modep-model",
-  "cpu": 0.5,
-  "memory": "1Gi",
-  "min_replicas": 1,
-  "max_replicas": 3
+  "subscription_id": "YOUR-AZURE-SUBSCRIPTION-ID",
+  "resource_group": "modep-ai-dev-rg",
+  "location": "eastus2",
+  "acr_name": "modepaidevacr",
+  "container_app_env_name": "modep-ai-env-dev",
+  "container_app_base_name": "private-ai-gateway",
+  "cpu": 1.0,
+  "memory": "2Gi",
+  "min_replicas": 0,
+  "max_replicas": 2,
+  "scale_to_zero": true,
+  "idle_timeout_seconds": 300
 }

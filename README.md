@@ -1,116 +1,178 @@
-docker-compose up --build -d
-curl -X 'POST' \
-  'http://localhost:8081/predict' \
-  -H 'Content-Type: application/json' \
-  -H 'X-API-Key: SetYourOwnSecretKeyHere' \
-  -d '{
-  "text": "Describe this image",
-  "image_url": "[https://images.pexels.com/photos/20787/pexels-photo.jpg](https://images.pexels.com/photos/20787/pexels-photo.jpg)",
-  "max_length": 100
-}'
+# Private Azure AI Gateway & Model Deployer 🚀
 
-# Azure Model Deployer 🚀
+![Private Azure AI Gateway](assets/cover.png)
 
-> **Production-ready, secure, and flexible model deployment for text and vision models on Azure or locally.**
+[![OpenAI Compatible](https://img.shields.io/badge/API-OpenAI_v1_Compatible-412991?style=flat&logo=openai)](https://platform.openai.com/docs/api-reference)
+[![FastAPI](https://img.shields.io/badge/FastAPI-0.110+-009688?style=flat&logo=fastapi)](https://fastapi.tiangolo.com)
+[![Docker](https://img.shields.io/badge/Docker-Ready-2496ED?style=flat&logo=docker)](https://www.docker.com)
+[![Azure](https://img.shields.io/badge/Azure-Container_Apps-0089D6?style=flat&logo=microsoftazure)](https://azure.microsoft.com)
+[![DeepSeek & Qwen](https://img.shields.io/badge/Models-DeepSeek_|_Qwen_|_Llama-FF6F00)](https://huggingface.co)
+[![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
+[![Gumroad Package](https://img.shields.io/badge/Gumroad-Production_Boilerplate_%2410-ff90e8?style=flat&logo=gumroad)](https://faizalbagwan.gumroad.com/l/hhtxdv)
 
----
-
-## Overview
-
-Welcome! This project lets you deploy and run both text (GPT-2) and vision-language (SmolVLM) models with ease. You can switch between small and large models by changing a single config value—no code edits needed. Security and reliability are built in.
+> **Self-host your own private, drop-in OpenAI-compatible API on Azure Container Apps. Serve DeepSeek-R1, Qwen 2.5, Llama 3.2, and Vision models with real-time streaming and Scale-to-Zero ($0 idle cloud cost).**
 
 ---
 
-## ✨ Features
-
-- **Universal Model Support:**
-  - Auto-detects and runs either `SmolVLM-500M` or `SmolVLM2-2.2B`.
-- **Security First:**
-  - 🔐 **API Key Auth:** All endpoints require an `X-API-Key` header.
-  - 🛡️ **Crash Prevention:** Strict limits on text length and token count.
-  - 🚦 **Rate Limiting:** 10 requests/minute per client.
-- **Easy Local Development:**
-  - `docker-compose` spins up both models on different ports for easy testing.
+### 📦 Production Boilerplate & Client Services
+* **⚡ Download the Production Release:** Get the tested package with GPU CUDA 12.1 Dockerfiles, Pydantic configs, and automated Azure CLI deploy scripts on [Gumroad ($10)](https://faizalbagwan.gumroad.com/l/hhtxdv).
+* **💼 Custom Enterprise Deployment & Consulting:** Need this deployed to your team's Azure / AWS cloud infrastructure or custom fine-tuned models integrated? Reach out directly via GitHub Issues or contact: **faizalbagwan.dev@gmail.com**.
 
 ---
 
-## 🚀 Quickstart
+## 💡 Why This Exists (The Problem We Solve)
 
-### 1. Environment Setup
+1. **Astronomical OpenAI Bills:** Running proprietary APIs costs growing teams $1,000–$10,000+ every month.
+2. **Data Privacy & Compliance (GDPR, HIPAA, Enterprise):** Confidential data cannot be sent to third-party APIs.
+3. **The 24/7 Cloud Cost Trap:** Traditional Azure GPU VMs run 24/7, costing $700–$2,500/month even when completely idle at night.
+4. **Zero Code Changes:** This gateway matches the exact **OpenAI API specification** (`/v1/chat/completions`, `/v1/models`, `/v1/embeddings`), so your existing apps, LangChain, or Cursor setups switch by changing just **one line of code**.
 
-Create a `.env` file in the project root (copy from `.env.example` if available):
+---
 
-```ini
-# Set your own strong API key!
-API_KEY=SetYourOwnSecretKeyHere
+## ⚡ The 1-Line Drop-In Replacement
 
-# Choose your model:
-# For the fast/small version:
-# HF_MODEL_ID=HuggingFaceTB/SmolVLM-500M-Instruct
-# For the smart/large version:
-HF_MODEL_ID=HuggingFaceTB/SmolVLM2-2.2B-Instruct
+Replace expensive proprietary APIs in your codebase with your private self-hosted Azure gateway:
 
-# System settings
-TASK_TYPE=vlm
-MAX_TOKENS=128
+```python
+from openai import OpenAI
+
+# Simply change base_url to point to your Azure Gateway!
+client = OpenAI(
+    base_url="https://my-private-ai.azurecontainerapps.io/v1",  # Your Azure live URL
+    api_key="sk-private-azure-key-12345"
+)
+
+# Works exactly the same with all existing OpenAI code:
+response = client.chat.completions.create(
+    model="deepseek-ai/DeepSeek-R1-Distill-Qwen-1.5B",
+    messages=[{"role": "user", "content": "Explain quantum computing in simple terms."}],
+    stream=True # Full Server-Sent Events (SSE) typewriter streaming!
+)
+
+for chunk in response:
+    print(chunk.choices[0].delta.content or "", end="")
 ```
 
-### 2. Start the Server
+---
 
-Build and launch everything with:
+## 📌 Architecture Overview
 
+```text
+       [ Existing Apps / LangChain / SDKs ]
+                        │
+                        │ Standard OpenAI API calls (Bearer sk-...)
+                        ▼
+       ┌──────────────────────────────────────────────────┐
+       │         Private Azure AI Gateway (FastAPI)       │
+       │  ├─ POST /v1/chat/completions (Stream & Non-Str) │
+       │  ├─ GET  /v1/models (Model Discovery)            │
+       │  ├─ POST /v1/embeddings (Vector Search & RAG)    │
+       │  ├─ Zero-Trust Bearer Auth & Token Rate Limiting │
+       │  └─ CORS & 5MB Payload Guards                    │
+       └────────────────────────┬─────────────────────────┘
+                                │
+        ┌───────────────────────┼───────────────────────┐
+        ▼                       ▼                       ▼
+ [ DeepSeek-R1 ]         [ Qwen 2.5 ]           [ SmolVLM ]
+ (Reasoning Engine)    (Coding & Chat)      (Multimodal Vision)
+        │                       │                       │
+        └───────────────────────┼───────────────────────┘
+                                ▼
+         ┌─────────────────────────────────────────────┐
+         │ Azure Container Apps (ACA) — Scale-to-Zero  │
+         │   • Replicas: 0 when idle (Costs $0.00!)    │
+         │   • Auto-scales up when requests arrive     │
+         └─────────────────────────────────────────────┘
+```
+
+---
+
+## 🔥 Supported Modern Models
+
+Pre-configured and ready to run via simple config files:
+
+| Model | Size | Best For | Config File |
+|---|---|---|---|
+| **DeepSeek-R1-Distill-Qwen** | 1.5B | High-speed step-by-step reasoning | `config/models/deepseek-r1-1.5b.json` |
+| **Qwen 2.5 Coder** | 1.5B | Top-tier code generation & technical tasks | `config/models/qwen2.5-coder-1.5b.json` |
+| **Meta Llama 3.2** | 1B | Ultra-lightweight, high-throughput chat | `config/models/llama-3.2-1b.json` |
+| **SmolVLM** | 500M / 2.2B | Visual document analysis, OCR, image chat | `config/models/smolvlm-500m.json` |
+| **BGE Small v1.5** | 384-dim | High-accuracy RAG vector embeddings | `config/models/bge-small-embeddings.json` |
+
+---
+
+## 💰 Scale-to-Zero: Save 90% on Cloud Invoices
+
+Azure GPU and CPU instances normally cost money every minute they are awake.
+
+In `config/environments/dev.json` and `staging.json`, we configure:
+```json
+{
+  "min_replicas": 0,
+  "max_replicas": 3,
+  "scale_to_zero": true,
+  "idle_timeout_seconds": 300
+}
+```
+* **When idle for 5 minutes:** Container scales down to **0 replicas**. You pay **$0.00**.
+* **When a request arrives:** Azure automatically spins up the container and serves the request.
+
+---
+
+## 🚀 Quickstart (Local Docker)
+
+### 1. Configure Secret Key
+Copy the template configuration:
+```bash
+cp .env.example .env
+```
+
+### 2. Launch Local Containers
 ```bash
 docker-compose up --build -d
 ```
+Endpoints will be live:
+* **Chat Gateway:** `http://localhost:8080/v1/chat/completions`
+* **Interactive Docs:** `http://localhost:8080/docs`
+* **Vision Gateway:** `http://localhost:8081/v1/chat/completions`
 
-- **GPT-2 (Text):** http://localhost:8080
-- **SmolVLM (Vision):** http://localhost:8081
+### 3. Run Streaming Demo
+```bash
+pip install openai
+python examples/streaming_chat.py
+```
 
 ---
 
-## 🧪 Testing the API
+## ☁️ Deploy to Azure Container Apps in 1 Command
 
-**PowerShell Example:**
+### Prerequisites
+1. [Azure CLI](https://learn.microsoft.com/en-us/cli/azure/install-azure-cli) installed (`az login`).
+2. Azure Container Registry (ACR) created.
 
-```powershell
-Invoke-RestMethod -Uri "http://localhost:8081/predict" `
-  -Method Post `
-  -Headers @{"X-API-Key"="SetYourOwnSecretKeyHere"} `
-  -ContentType "application/json" `
-  -Body '{"text": "Describe this image", "image_url": "https://images.pexels.com/photos/20787/pexels-photo.jpg", "max_length": 100}'
+### Execute Deployment:
+```bash
+python src/deployment/deploy_model.py --model-key deepseek-r1-1.5b --env dev
 ```
 
-**Curl Example (Linux/Azure):**
+The script automatically:
+1. Validates configurations against Pydantic schemas.
+2. Builds the optimized Docker container (CPU or NVIDIA CUDA 12.1).
+3. Authenticates with ACR and pushes the image.
+4. Provisions Azure Container App with external HTTPS ingress and Scale-to-Zero rules.
+5. Returns your live private OpenAI endpoint URL!
+
+---
+
+## 🧪 Automated Pytest Suite
 
 ```bash
-curl -X POST \
-  http://localhost:8081/predict \
-  -H 'Content-Type: application/json' \
-  -H 'X-API-Key: SetYourOwnSecretKeyHere' \
-  -d '{
-    "text": "Describe this image",
-    "image_url": "https://images.pexels.com/photos/20787/pexels-photo.jpg",
-    "max_length": 100
-  }'
+pip install -r requirements-dev.txt
+pytest tests/ -v
 ```
 
 ---
 
-## 🔄 Switching Models
+## 📄 License
 
-1. Open your `.env` file.
-2. Change the `HF_MODEL_ID` value to the desired model.
-3. Run `docker-compose up -d` to restart with the new model.
-
----
-
-## ☁️ Azure Deployment Notes
-
-- **Memory:** The 2.2B model requires at least 8GB RAM. The 500M model works with less.
-- **Secrets:** The `.env` file is not included for security. Set environment variables manually in the Azure portal when deploying.
-
----
-
-## 🙌 Need Help?
-
-Open an issue or reach out if you have questions or need support!
+This project is licensed under the [MIT License](LICENSE).

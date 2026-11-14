@@ -1,0 +1,14 @@
+{
+  "model_key": "qwen2.5-coder-1.5b",
+  "huggingface_model_id": "Qwen/Qwen2.5-Coder-1.5B-Instruct",
+  "task_type": "chat",
+  "image_tag_suffix": "v1",
+  "port": 8080,
+  "healthcheck_path": "/health",
+  "environment_variables": {
+    "HF_MODEL_ID": "Qwen/Qwen2.5-Coder-1.5B-Instruct",
+    "TASK_TYPE": "chat",
+    "MAX_TOKENS": "512"
+  }
+}
+

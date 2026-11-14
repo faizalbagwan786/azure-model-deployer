@@ -1,31 +1,34 @@
 version: "3.9"
 
 services:
-  gpt2:
+  # Service 1: OpenAI-Compatible Chat Gateway (Qwen 2.5 / DeepSeek R1)
+  ai-chat:
     build:
       context: .
       dockerfile: docker/base_hf_server.Dockerfile
-    container_name: azure-model-deployer-gpt2
-    env_file: .env
+    container_name: private-ai-chat-gateway
+    env_file:
+      - .env
     environment:
-      HF_MODEL_ID: gpt2
-      TASK_TYPE: text-generation
-      MAX_TOKENS: 128
+      HF_MODEL_ID: Qwen/Qwen2.5-1.5B-Instruct
+      TASK_TYPE: chat
+      MAX_TOKENS: 512
     ports:
       - "8080:8080"
-    restart: always
+    restart: unless-stopped
 
-
-  smol-vlm:
+  # Service 2: Vision-Language Model (SmolVLM / Multimodal)
+  ai-vision:
     build:
       context: .
       dockerfile: docker/base_hf_server.Dockerfile
-    container_name: azure-model-deployer-smol-vlm
-    env_file: .env
+    container_name: private-ai-vision-gateway
+    env_file:
+      - .env
     environment:
-      HF_MODEL_ID: HuggingFaceTB/SmolVLM2-2.2B-Instruct
+      HF_MODEL_ID: HuggingFaceTB/SmolVLM-500M-Instruct
       TASK_TYPE: vlm
-      MAX_TOKENS: 128
+      MAX_TOKENS: 256
     ports:
       - "8081:8080"
-    restart: always
+    restart: unless-stopped
